@@ -54,6 +54,7 @@ class BookTest extends TestCase
     public function test_詳細が表示されるか()
     {
         $response = $this->actingAs($this->user)->get(route('books.show', $this->book));
+
         $response->assertOk();
         $response->assertSee($this->book->title);
     }
@@ -61,6 +62,7 @@ class BookTest extends TestCase
     public function test_更新ができるか()
     {
         $genres = Genre::factory()->count(2)->create();
+
         $response = $this->actingAs($this->user)->put(route('books.update', $this->book), [
             'title' => '更新後のタイトル',
             'author' => '更新後の著者',
@@ -76,6 +78,7 @@ class BookTest extends TestCase
     public function test_削除ができるか()
     {
         $response = $this->actingAs($this->user)->delete(route('books.destroy', $this->book));
+
         $response->assertRedirect(route('books.index'));
         $this->assertDatabaseMissing('books', ['id' => $this->book->id]);
     }
@@ -86,6 +89,7 @@ class BookTest extends TestCase
         $otherBook = Book::factory()->create(['user_id' => $otherUser->id]);
 
         $response = $this->actingAs($this->user)->get(route('books.index'));
+
         $response->assertSee($this->book->title);
         $response->assertDontSee(($otherBook->title));
     }
@@ -93,6 +97,7 @@ class BookTest extends TestCase
     public function test_タイトルが空白のときバリデーションエラー()
     {
         $genre = Genre::factory()->create();
+
         $response = $this->actingAs($this->user)->post(route('books.store'), [
             'title' => '',
             'author' => '著者名',
@@ -100,13 +105,14 @@ class BookTest extends TestCase
             'status' => 1,
             'genres' => [$genre->id],
         ]);
-        $response->assertSessionHasErrors('title');
 
+        $response->assertSessionHasErrors(['title']);
     }
 
     public function test_タイトルが100字のとき作成できるか()
     {
         $genre = Genre::factory()->create();
+
         $response = $this->actingAs($this->user)->post(route('books.store'), [
             'title' => str_repeat('あ', 100),
             'author' => '著者名',
@@ -114,12 +120,14 @@ class BookTest extends TestCase
             'status' => 1,
             'genres' => [$genre->id],
         ]);
+
         $response->assertRedirect(route('books.index'));
     }
 
     public function test_タイトルが101字のときバリデーションエラー()
     {
         $genre = Genre::factory()->create();
+
         $response = $this->actingAs($this->user)->post(route('books.store'), [
             'title' => str_repeat('あ', 101),
             'author' => '著者名',
@@ -127,12 +135,14 @@ class BookTest extends TestCase
             'status' => 1,
             'genres' => [$genre->id],
         ]);
-        $response->assertSessionHasErrors('title');
+
+        $response->assertSessionHasErrors(['title']);
     }
 
     public function test_著者名が空白のときバリデーションエラー()
     {
         $genre = Genre::factory()->create();
+
         $response = $this->actingAs($this->user)->post(route('books.store'), [
             'title' => 'タイトル',
             'author' => '',
@@ -140,12 +150,14 @@ class BookTest extends TestCase
             'status' => 1,
             'genres' => [$genre->id],
         ]);
-        $response->assertSessionHasErrors('author');
+
+        $response->assertSessionHasErrors(['author']);
     }
 
     public function test_著者名が100字のとき作成できるか()
     {
         $genre = Genre::factory()->create();
+
         $response = $this->actingAs($this->user)->post(route('books.store'), [
             'title' => 'タイトル',
             'author' => str_repeat('あ', 100),
@@ -153,6 +165,7 @@ class BookTest extends TestCase
             'status' => 1,
             'genres' => [$genre->id],
         ]);
+
         $response->assertRedirect(route('books.index'));
 
     }
@@ -160,6 +173,7 @@ class BookTest extends TestCase
     public function test_著者名が101字のときバリデーションエラー()
     {
         $genre = Genre::factory()->create();
+
         $response = $this->actingAs($this->user)->post(route('books.store'), [
             'title' => 'タイトル',
             'author' => str_repeat('あ', 101),
@@ -167,12 +181,14 @@ class BookTest extends TestCase
             'status' => 1,
             'genres' => [$genre->id],
         ]);
-        $response->assertSessionHasErrors('author');
+
+        $response->assertSessionHasErrors(['author']);
     }
 
     public function test_メモが空白でも作成できる()
     {
         $genre = Genre::factory()->create();
+
         $response = $this->actingAs($this->user)->post(route('books.store'), [
             'title' => 'タイトル',
             'author' => '著者名',
@@ -180,12 +196,14 @@ class BookTest extends TestCase
             'status' => 1,
             'genres' => [$genre->id],
         ]);
+
         $response->assertRedirect(route('books.index'));
     }
 
     public function test_未ログインで一覧にアクセスするとログイン画面に移動()
     {
         $response = $this->get(route('books.index'));
+
         $response->assertRedirect(route('login'));
     }
 }
