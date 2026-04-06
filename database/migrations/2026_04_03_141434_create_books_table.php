@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('title', 100);
             $table->string('author', 100);
-            $table->text('memo');
+            $table->text('memo')->nullable();
             $table->tinyInteger('status')->default(0)->comment('0:未読 1:読書中 2:読了');
             $table->timestamps();
         });
