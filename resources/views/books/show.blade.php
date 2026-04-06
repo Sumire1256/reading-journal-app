@@ -13,7 +13,7 @@
     <div>
         <h2>{{ $book->title }} <span>{{ $book->status_label }}</span></h2>
         <div>
-            @foreach ($ganres as $ganre)
+            @foreach ($genres as $genre)
                 <span>{{ $genre->name }}</span>
             @endforeach
         </div>
