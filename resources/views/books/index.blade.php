@@ -2,8 +2,24 @@
     <div>
         <div>
             <h2>読書記録一覧</h2>
+            <form action="{{ route('books.index') }}" method="GET">
+                <h3>検索</h3>
+                <input type="text" name="title" value="{{ request('title') }}" placeholder="タイトルで検索">
+                <input type="text" name="author" value="{{ request('author') }}" placeholder="著者名で検索">
+                <p>ジャンルで検索</p>
+                <select name="genre">
+                    <option value="">ジャンル指定なし</option>
+                    @foreach ($genres as $genre)
+                        <option value="{{ $genre->id }}" {{ request('genre') == $genre->id ? 'selected' : ''}}>
+                            {{ $genre->name }}
+                        </option>
+                    @endforeach
+                </select>
+                <button type="submit">検索</button>
+                <a href="{{ route('books.index') }}">リセット</a>
+            </form>
             <div>
-                <p>全{{ auth()->user()->books()->count() }}件</p>
+                <p>全{{ $count }}件</p>
                 <a href="{{ route('books.create') }}">新しい記録</a>
             </div>
             
@@ -23,5 +39,6 @@
                 <p>読書記録がありません</p>
             @endforelse
         </div>
+        {{ $books->withQueryString()->links() }}
     </div>
 </x-app-layout>

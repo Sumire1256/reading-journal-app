@@ -5,17 +5,33 @@ namespace App\Http\Controllers;
 use App\Http\Requests\BookRequest;
 use App\Models\Book;
 use App\Models\Genre;
+use Illuminate\Http\Request;
 
 class BookController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $books = Book::where('user_id', auth()->id())->latest()->get();
+        $query = Book::where('user_id', auth()->id());
+        if ($request->filled('title')) {
+            $query->where('title', 'like', '%', $request->title, '%');
+        }
+        if ($request->filled('author')) {
+            $query->where('author', 'like', '%', $request->author, '%');
+        }
+        if ($request->filled('genre')) {
+            $query->whereHas('genres', function ($q) use ($request) {
+                $q->where('genres.id', $request->genre);
+            });
+        }
 
-        return view('books.index', compact('books'));
+        $books = $query->latest()->paginate(5);
+        $genres = Genre::all();
+        $count = $books->total();
+
+        return view('books.index', compact('books', 'genres', 'count'));
     }
 
     /**
